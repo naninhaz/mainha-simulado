@@ -12,29 +12,57 @@
         <!-- Home Screen -->
         <div id="home-screen" class="screen active">
             <header class="header">
-                <img src="https://cdn-icons-png.flaticon.com/512/94/94859.png" alt="Logo" class="logo">
                 <h1>Simulado de Enfermagem</h1>
                 <p>Gerência e Gestão Patrimonial</p>
             </header>
             
             <main class="container">
                 <div class="welcome-section">
-                    <p class="intro-text">Bem-vindo ao simulado completo de Gerência em Enfermagem e Gestão Patrimonial!</p>
+                    <img src="https://media1.tenor.com/m/8a3Opn3C07cAAAAC/pokemon-nurse.gif" alt="Hospital" class="welcome-gif">
+                    <p class="intro-text">Bem-vindo ao simulado de Gerência em Enfermagem e Gestão Patrimonial!</p>
                 </div>
                 
                 <div class="menu-options">
                     <button class="btn btn-primary" onclick="showScreen('content-screen', 'gerencia')">
-                        📚 Conteúdo: Gerência
+                        Conteúdo: Gerência
                     </button>
                     <button class="btn btn-primary" onclick="showScreen('content-screen', 'patrimonial')">
-                        📦 Conteúdo: Gestão Patrimonial
+                        Conteúdo: Gestão Patrimonial
                     </button>
-                    <button class="btn btn-success" onclick="startQuiz()">
-                        🎯 Iniciar Simulado (40 questões)
+                    <button class="btn btn-success" onclick="showScreen('quiz-select-screen')">
+                        Iniciar Simulado
                     </button>
                     <button class="btn btn-info" onclick="showScreen('history-screen')">
-                        📊 Ver Histórico de Tentativas
+                        Ver Histórico de Tentativas
                     </button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Quiz Selection Screen -->
+        <div id="quiz-select-screen" class="screen">
+            <header class="header-internal">
+                <button class="btn-back" onclick="backToHome()">Voltar</button>
+                <h1>Escolha a Matéria</h1>
+            </header>
+            
+            <main class="container">
+                <div class="selection-content">
+                    <p class="selection-intro">Selecione qual matéria deseja ser avaliado:</p>
+                    <div class="selection-options">
+                        <button class="btn btn-selection" onclick="startQuizByCategory('Gerência')">
+                            <span class="selection-title">Gerência em Enfermagem</span>
+                            <span class="selection-subtitle">20 questões</span>
+                        </button>
+                        <button class="btn btn-selection" onclick="startQuizByCategory('Gestão Patrimonial')">
+                            <span class="selection-title">Gestão Patrimonial</span>
+                            <span class="selection-subtitle">20 questões</span>
+                        </button>
+                        <button class="btn btn-selection-full" onclick="startQuizByCategory('Ambas')">
+                            <span class="selection-title">Simulado Completo</span>
+                            <span class="selection-subtitle">40 questões (20 de cada matéria)</span>
+                        </button>
+                    </div>
                 </div>
             </main>
         </div>
@@ -42,7 +70,7 @@
         <!-- Content Screen (Estudo) -->
         <div id="content-screen" class="screen">
             <header class="header-internal">
-                <button class="btn-back" onclick="backToHome()">← Voltar</button>
+                <button class="btn-back" onclick="backToHome()">Voltar</button>
                 <h1 id="content-title">Conteúdo</h1>
             </header>
             
@@ -89,8 +117,8 @@
                 </div>
                 
                 <div class="results-actions">
-                    <button class="btn btn-success" onclick="startQuiz()">🔄 Refazer Simulado</button>
-                    <button class="btn btn-primary" onclick="backToHome()">🏠 Voltar ao Início</button>
+                    <button class="btn btn-success" onclick="backToHome()">Escolher Outra Matéria</button>
+                    <button class="btn btn-primary" onclick="backToHome()">Voltar ao Início</button>
                 </div>
             </main>
         </div>
@@ -98,7 +126,7 @@
         <!-- History Screen -->
         <div id="history-screen" class="screen">
             <header class="header-internal">
-                <button class="btn-back" onclick="backToHome()">← Voltar</button>
+                <button class="btn-back" onclick="backToHome()">Voltar</button>
                 <h1>Histórico de Tentativas</h1>
             </header>
             

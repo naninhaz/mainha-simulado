@@ -7,7 +7,9 @@ let appState = {
     currentQuestionIndex: 0,
     userAnswers: [],
     quizHistor: [],
-    chart: null
+    chart: null,
+    quizCategory: null,
+    quizQuestions: []
 };
 
 // ===== INICIALIZAÇÃO =====
@@ -89,10 +91,20 @@ function renderContent(contentType) {
 
 // ===== QUIZ SCREEN =====
 
-function startQuiz() {
+function startQuizByCategory(category) {
+    appState.quizCategory = category;
+    
+    if (category === 'Ambas') {
+        appState.quizQuestions = quizData;
+    } else if (category === 'Gerência') {
+        appState.quizQuestions = quizData.filter(q => q.category === 'Gerência');
+    } else if (category === 'Gestão Patrimonial') {
+        appState.quizQuestions = quizData.filter(q => q.category === 'Gestão Patrimonial');
+    }
+    
     appState.quizStarted = true;
     appState.currentQuestionIndex = 0;
-    appState.userAnswers = new Array(quizData.length).fill(null);
+    appState.userAnswers = new Array(appState.quizQuestions.length).fill(null);
     
     showScreen('quiz-screen');
     renderQuizQuestion();
@@ -100,11 +112,11 @@ function startQuiz() {
 
 function renderQuizQuestion() {
     const questionIndex = appState.currentQuestionIndex;
-    const question = quizData[questionIndex];
+    const question = appState.quizQuestions[questionIndex];
     
     // Atualizar progresso
-    const progressPercentage = ((questionIndex + 1) / quizData.length) * 100;
-    document.getElementById('quiz-counter').textContent = `Questão ${questionIndex + 1} de ${quizData.length}`;
+    const progressPercentage = ((questionIndex + 1) / appState.quizQuestions.length) * 100;
+    document.getElementById('quiz-counter').textContent = `Questão ${questionIndex + 1} de ${appState.quizQuestions.length}`;
     document.getElementById('progress-fill').style.width = progressPercentage + '%';
     
     // Renderizar questão
@@ -126,15 +138,15 @@ function renderQuizQuestion() {
         <div class="question-text">${question.question}</div>
         <div class="options">${optionsHTML}</div>
         <div class="quiz-navigation">
-            <button class="btn btn-small" onclick="previousQuestion()" ${questionIndex === 0 ? 'disabled' : ''}>← Anterior</button>
-            <button class="btn btn-small" onclick="nextQuestion()" ${questionIndex === quizData.length - 1 ? 'disabled' : ''}>Próxima →</button>
+            <button class="btn btn-small" onclick="previousQuestion()" ${questionIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="btn btn-small" onclick="nextQuestion()" ${questionIndex === appState.quizQuestions.length - 1 ? 'disabled' : ''}>Próxima</button>
         </div>
     `;
 }
 
 function selectAnswer(answerIndex) {
     const questionIndex = appState.currentQuestionIndex;
-    const question = quizData[questionIndex];
+    const question = appState.quizQuestions[questionIndex];
     
     appState.userAnswers[questionIndex] = answerIndex;
     
@@ -145,11 +157,11 @@ function selectAnswer(answerIndex) {
     feedbackArea.classList.remove('hidden', 'correct', 'incorrect');
     feedbackArea.classList.add(isCorrect ? 'correct' : 'incorrect');
     
-    const feedbackTitle = isCorrect ? '✓ Resposta Correta!' : '✗ Resposta Incorreta';
-    const feedbackIcon = isCorrect ? '✓' : '✗';
+    const feedbackTitle = isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta';
+    const feedbackIcon = isCorrect ? '[✓]' : '[✗]';
     
     feedbackArea.innerHTML = `
-        <div class="feedback-title">${feedbackIcon} ${isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta'}</div>
+        <div class="feedback-title">${feedbackIcon} ${feedbackTitle}</div>
         <div class="feedback-text"><strong>Justificativa:</strong> ${question.justification}</div>
     `;
     
@@ -169,7 +181,7 @@ function selectAnswer(answerIndex) {
 }
 
 function nextQuestion() {
-    if (appState.currentQuestionIndex < quizData.length - 1) {
+    if (appState.currentQuestionIndex < appState.quizQuestions.length - 1) {
         appState.currentQuestionIndex++;
         renderQuizQuestion();
     } else {
@@ -187,12 +199,15 @@ function previousQuestion() {
 function finishQuiz() {
     // Calcular score
     let correctAnswers = 0;
-    let categoryScores = {
-        'Gerência': { correct: 0, total: 20 },
-        'Gestão Patrimonial': { correct: 0, total: 20 }
-    };
+    let categoryScores = {};
     
-    quizData.forEach((question, index) => {
+    appState.quizQuestions.forEach((question, index) => {
+        if (!categoryScores[question.category]) {
+            categoryScores[question.category] = { correct: 0, total: 0 };
+        }
+        
+        categoryScores[question.category].total++;
+        
         if (appState.userAnswers[index] === question.correct) {
             correctAnswers++;
             categoryScores[question.category].correct++;
@@ -202,9 +217,10 @@ function finishQuiz() {
     // Salvar tentativa no histórico
     const attempt = {
         date: new Date().toLocaleString('pt-BR'),
+        category: appState.quizCategory,
         score: correctAnswers,
-        total: quizData.length,
-        percentage: Math.round((correctAnswers / quizData.length) * 100),
+        total: appState.quizQuestions.length,
+        percentage: Math.round((correctAnswers / appState.quizQuestions.length) * 100),
         categoryScores: categoryScores,
         answers: [...appState.userAnswers]
     };
@@ -228,16 +244,16 @@ function showResultsScreen(attempt) {
     finalScore.textContent = `${attempt.score}/${attempt.total}`;
     scorePercentage.textContent = `${attempt.percentage}%`;
     
-    let statsHTML = `
-        <div class="stat-item">
-            <span class="stat-label">Gerência em Enfermagem</span>
-            <span class="stat-value">${attempt.categoryScores['Gerência'].correct}/${attempt.categoryScores['Gerência'].total}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Gestão Patrimonial</span>
-            <span class="stat-value">${attempt.categoryScores['Gestão Patrimonial'].correct}/${attempt.categoryScores['Gestão Patrimonial'].total}</span>
-        </div>
-    `;
+    let statsHTML = '';
+    
+    Object.entries(attempt.categoryScores).forEach(([category, scores]) => {
+        statsHTML += `
+            <div class="stat-item">
+                <span class="stat-label">${category}</span>
+                <span class="stat-value">${scores.correct}/${scores.total}</span>
+            </div>
+        `;
+    });
     
     resultsStats.innerHTML = statsHTML;
     
@@ -324,7 +340,7 @@ function renderHistoryScreen() {
     if (appState.quizHistor.length === 0) {
         historyContent.innerHTML = `
             <div class="history-empty">
-                <p>📊 Nenhuma tentativa registrada ainda.</p>
+                <p>Nenhuma tentativa registrada ainda.</p>
                 <p>Complete o simulado para ver seu histórico aqui!</p>
             </div>
         `;
@@ -334,13 +350,13 @@ function renderHistoryScreen() {
     let historyHTML = '<div class="history-list">';
     
     appState.quizHistor.forEach((attempt, index) => {
-        const performance = attempt.percentage >= 70 ? '✓ Bom' : attempt.percentage >= 50 ? '~ Médio' : '✗ Precisa melhorar';
-        const performanceClass = attempt.percentage >= 70 ? 'good' : attempt.percentage >= 50 ? 'medium' : 'poor';
+        const performance = attempt.percentage >= 70 ? '[ Bom ]' : attempt.percentage >= 50 ? '[ Médio ]' : '[ Precisa melhorar ]';
         
         historyHTML += `
             <div class="history-item">
                 <div class="history-info">
-                    <div class="history-date">📅 Tentativa ${index + 1} - ${attempt.date}</div>
+                    <div class="history-date">Tentativa ${index + 1} - ${attempt.date}</div>
+                    <div class="history-category">${attempt.category || 'Completo'}</div>
                     <div class="history-score">Score: ${attempt.score}/${attempt.total}</div>
                     <div class="history-percentage">${attempt.percentage}% - ${performance}</div>
                 </div>
