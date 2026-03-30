@@ -655,6 +655,86 @@ body {
     gap: 1rem;
 }
 
+.results-report {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%);
+    border-radius: 15px;
+    border: 2px solid rgba(219, 112, 147, 0.15);
+}
+
+.report-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.report-line {
+    background: white;
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(219, 112, 147, 0.15);
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.recommendation-text {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    border-left: 5px solid var(--primary-dark);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.improvement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.improvement-list h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--primary-dark);
+}
+
+.improvement-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(219, 112, 147, 0.15);
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #FF6B6B 0%, #DC143C 100%);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #E55A5A 0%, #C42B2B 100%);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #F5F5F5 0%, #D8D8D8 100%);
+    color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #E5E5E5 0%, #C1C1C1 100%);
+}
+
+.history-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 120px;
+}
+
 .stat-item {
     padding: 1rem;
     background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%);

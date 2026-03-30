@@ -285,12 +285,13 @@ function showResultsScreen(attempt) {
     const finalScore = document.getElementById('final-score');
     const scorePercentage = document.getElementById('score-percentage');
     const resultsStats = document.getElementById('results-stats');
+    const resultsReport = document.getElementById('results-report');
+    const recommendationText = document.getElementById('recommendation-text');
     
     finalScore.textContent = `${attempt.score}/${attempt.total}`;
     scorePercentage.textContent = `${attempt.percentage}%`;
     
     let statsHTML = '';
-    
     Object.entries(attempt.categoryScores).forEach(([category, scores]) => {
         statsHTML += `
             <div class="stat-item">
@@ -299,11 +300,65 @@ function showResultsScreen(attempt) {
             </div>
         `;
     });
-    
     resultsStats.innerHTML = statsHTML;
+    
+    const report = generatePerformanceReport(attempt);
+    resultsReport.innerHTML = report.summaryHTML;
+    recommendationText.innerHTML = report.recommendationHTML;
     
     // Renderizar gráfico
     renderAttemptsChart();
+}
+
+function generatePerformanceReport(attempt) {
+    const incorrectCount = attempt.total - attempt.score;
+    const categoryPerformance = Object.entries(attempt.categoryScores).map(([category, scores]) => ({
+        category,
+        correct: scores.correct,
+        total: scores.total,
+        accuracy: Math.round((scores.correct / scores.total) * 100)
+    }));
+    
+    const bestCategory = categoryPerformance.reduce((best, current) => current.accuracy > best.accuracy ? current : best, categoryPerformance[0]);
+    const worstCategory = categoryPerformance.reduce((worst, current) => current.accuracy < worst.accuracy ? current : worst, categoryPerformance[0]);
+    
+    const subjectSuggestions = {
+        'Gerência': 'Reveja as Teorias Administrativas, Funções de Planejamento/Organização/Direção/Controle, MASP e a Lei 7.498/86.',
+        'Gestão Patrimonial': 'Reforce Classificação de Bens, Depreciação, Controle de Materiais, Codificação e Patrimônio Líquido.'
+    };
+    
+    const lowPerformance = categoryPerformance.filter(subject => subject.accuracy < 70);
+    const improvementLines = lowPerformance.length > 0
+        ? lowPerformance.map(subject => `
+            <div class="improvement-item">
+                <strong>${subject.category}:</strong> ${subject.accuracy}% de acertos. ${subjectSuggestions[subject.category] || 'Revise os principais conceitos dessa matéria.'}
+            </div>
+        `).join('')
+        : '<div class="improvement-item">Ótimo! Mantenha seus estudos e revisite os principais pontos para consolidar o conhecimento.</div>';
+    
+    const overallMessage = attempt.percentage >= 80
+        ? 'Excelente desempenho! Você está muito bem nos conteúdos do simulado.'
+        : attempt.percentage >= 60
+            ? 'Bom resultado! Concentre-se nos temas com menor aproveitamento para melhorar ainda mais.'
+            : 'Precisa melhorar: foque especialmente nas matérias com menor acerto para subir sua nota.';
+    
+    const summaryHTML = `
+        <div class="report-card">
+            <div class="report-line"><strong>Acertos:</strong> ${attempt.score}</div>
+            <div class="report-line"><strong>Erros:</strong> ${incorrectCount}</div>
+            <div class="report-line"><strong>Melhor matéria:</strong> ${bestCategory.category} (${bestCategory.accuracy}%)</div>
+            <div class="report-line"><strong>Mais atenção:</strong> ${worstCategory.category} (${worstCategory.accuracy}%)</div>
+        </div>
+        <div class="improvement-list">
+            <h4>O que melhorar por assunto</h4>
+            ${improvementLines}
+        </div>
+    `;
+
+    return {
+        summaryHTML,
+        recommendationHTML: `<p><strong>Recomendação:</strong> ${overallMessage}</p>`
+    };
 }
 
 // ===== GRÁFICO DE TENTATIVAS =====
@@ -405,6 +460,9 @@ function renderHistoryScreen() {
                     <div class="history-score">Score: ${attempt.score}/${attempt.total}</div>
                     <div class="history-percentage">${attempt.percentage}% - ${performance}</div>
                 </div>
+                <div class="history-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteAttempt(${index})">Excluir</button>
+                </div>
             </div>
         `;
     });
@@ -439,8 +497,17 @@ window.startQuizByCategory = startQuizByCategory;
 window.selectAnswer = selectAnswer;
 window.previousQuestion = previousQuestion;
 window.nextQuestion = nextQuestion;
+window.deleteAttempt = deleteAttempt;
 
 // ===== RESET DE DADOS (OPCIONAL) =====
+
+function deleteAttempt(index) {
+    if (confirm('Deseja excluir esta tentativa do histórico? Esta ação não pode ser desfeita.')) {
+        appState.quizHistor.splice(index, 1);
+        saveQuizHistory();
+        renderHistoryScreen();
+    }
+}
 
 function clearHistory() {
     if (confirm('Deseja limpar todo o histórico de tentativas? Esta ação não pode ser desfeita.')) {
