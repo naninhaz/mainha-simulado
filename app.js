@@ -9,7 +9,8 @@ let appState = {
     quizHistor: [],
     chart: null,
     quizCategory: null,
-    quizQuestions: []
+    quizQuestions: [],
+    navigationHistory: ['home']
 };
 
 // ===== INICIALIZAÇÃO =====
@@ -17,11 +18,26 @@ let appState = {
 document.addEventListener('DOMContentLoaded', () => {
     loadQuizHistory();
     renderHome();
+    
+    // Listener para botão back do navegador
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.screen) {
+            showScreenDirect(e.state.screen, e.state.contentType);
+        }
+    });
 });
 
 // ===== NAVEGAÇÃO ENTRE TELAS =====
 
 function showScreen(screenId, contentType = null) {
+    // Adicionar ao histórico do navegador
+    const state = { screen: screenId, contentType: contentType };
+    window.history.pushState(state, '', window.location.href);
+    
+    showScreenDirect(screenId, contentType);
+}
+
+function showScreenDirect(screenId, contentType = null) {
     // Ocultar todas as telas
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => screen.classList.remove('active'));
@@ -44,7 +60,17 @@ function showScreen(screenId, contentType = null) {
 
 function backToHome() {
     showScreen('home-screen');
-    appState.currentScreen = 'home';
+}
+
+function exitQuiz() {
+    if (appState.quizStarted) {
+        if (confirm('Deseja sair do simulado? Seu progresso será perdido!')) {
+            appState.quizStarted = false;
+            showScreen('quiz-select-screen');
+        }
+    } else {
+        showScreen('quiz-select-screen');
+    }
 }
 
 // ===== HOME SCREEN =====
