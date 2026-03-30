@@ -1,9 +1,10 @@
 {
-  "public": ".",
-  "cleanUrls": false,
+  "buildCommand": "true",
+  "outputDirectory": ".",
+  "public": true,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
