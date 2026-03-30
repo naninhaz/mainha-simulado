@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado - Gerência e Gestão Patrimonial</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/94/94859.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <header class="header">
+                <img src="https://cdn-icons-png.flaticon.com/512/94/94859.png" alt="Logo" class="logo">
+                <h1>Simulado de Enfermagem</h1>
+                <p>Gerência e Gestão Patrimonial</p>
+            </header>
+            
+            <main class="container">
+                <div class="welcome-section">
+                    <p class="intro-text">Bem-vindo ao simulado completo de Gerência em Enfermagem e Gestão Patrimonial!</p>
+                </div>
+                
+                <div class="menu-options">
+                    <button class="btn btn-primary" onclick="showScreen('content-screen', 'gerencia')">
+                        📚 Conteúdo: Gerência
+                    </button>
+                    <button class="btn btn-primary" onclick="showScreen('content-screen', 'patrimonial')">
+                        📦 Conteúdo: Gestão Patrimonial
+                    </button>
+                    <button class="btn btn-success" onclick="startQuiz()">
+                        🎯 Iniciar Simulado (40 questões)
+                    </button>
+                    <button class="btn btn-info" onclick="showScreen('history-screen')">
+                        📊 Ver Histórico de Tentativas
+                    </button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Content Screen (Estudo) -->
+        <div id="content-screen" class="screen">
+            <header class="header-internal">
+                <button class="btn-back" onclick="backToHome()">← Voltar</button>
+                <h1 id="content-title">Conteúdo</h1>
+            </header>
+            
+            <main class="container">
+                <div id="content-body" class="content-body"></div>
+            </main>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <header class="header-internal quiz-header">
+                <div class="quiz-progress">
+                    <span id="quiz-counter">Questão 1 de 40</span>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="container quiz-container">
+                <div id="quiz-content" class="quiz-content"></div>
+                <div id="feedback-area" class="feedback-area hidden"></div>
+            </main>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <header class="header-internal">
+                <h1>Resultado do Simulado</h1>
+            </header>
+            
+            <main class="container results-container">
+                <div class="results-summary">
+                    <div class="score-display">
+                        <h2 id="final-score">0/40</h2>
+                        <p id="score-percentage">0%</p>
+                    </div>
+                    <div id="results-stats" class="results-stats"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Comparação de Tentativas</h3>
+                    <canvas id="attempts-chart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="results-actions">
+                    <button class="btn btn-success" onclick="startQuiz()">🔄 Refazer Simulado</button>
+                    <button class="btn btn-primary" onclick="backToHome()">🏠 Voltar ao Início</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- History Screen -->
+        <div id="history-screen" class="screen">
+            <header class="header-internal">
+                <button class="btn-back" onclick="backToHome()">← Voltar</button>
+                <h1>Histórico de Tentativas</h1>
+            </header>
+            
+            <main class="container">
+                <div id="history-content" class="history-content"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="quiz-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
