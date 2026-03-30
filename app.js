@@ -148,6 +148,9 @@ function startQuizByCategory(category) {
 function renderQuizQuestion() {
     const questionIndex = appState.currentQuestionIndex;
     const question = appState.quizQuestions[questionIndex];
+    const answeredAll = appState.userAnswers.every(answer => answer !== null);
+    const selectedAnswer = appState.userAnswers[questionIndex];
+    const isLastQuestion = questionIndex === appState.quizQuestions.length - 1;
     
     // Atualizar progresso
     const progressPercentage = ((questionIndex + 1) / appState.quizQuestions.length) * 100;
@@ -164,7 +167,7 @@ function renderQuizQuestion() {
     let optionsHTML = '';
     question.options.forEach((option, index) => {
         optionsHTML += `
-            <button class="option-btn" onclick="selectAnswer(${index})">${option}</button>
+            <button type="button" class="option-btn" onclick="selectAnswer(${index})" ${selectedAnswer !== null ? 'disabled' : ''}>${option}</button>
         `;
     });
     
@@ -173,49 +176,48 @@ function renderQuizQuestion() {
         <div class="question-text">${question.question}</div>
         <div class="options">${optionsHTML}</div>
         <div class="quiz-navigation">
-            <button class="btn btn-small" onclick="previousQuestion()" ${questionIndex === 0 ? 'disabled' : ''}>Anterior</button>
-            <button class="btn btn-small" onclick="nextQuestion()" ${questionIndex === appState.quizQuestions.length - 1 ? 'disabled' : ''}>Próxima</button>
+            <button type="button" class="btn btn-small" onclick="previousQuestion()" ${questionIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button type="button" class="btn btn-small" onclick="nextQuestion()" ${questionIndex === appState.quizQuestions.length - 1 ? 'disabled' : ''}>Próxima</button>
+            ${isLastQuestion ? `<button type="button" class="btn btn-success" onclick="finishQuiz()" ${answeredAll ? '' : 'disabled'}>Salvar tentativa</button>` : ''}
         </div>
     `;
+    
+    if (selectedAnswer !== null) {
+        const isCorrect = selectedAnswer === question.correct;
+        const feedbackTitle = isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta';
+        const feedbackIcon = isCorrect ? '[✓]' : '[✗]';
+
+        feedbackArea.classList.remove('hidden', 'correct', 'incorrect');
+        feedbackArea.classList.add(isCorrect ? 'correct' : 'incorrect');
+        feedbackArea.innerHTML = `
+            <div class="feedback-title">${feedbackIcon} ${feedbackTitle}</div>
+            <div class="feedback-text"><strong>Justificativa:</strong> ${question.justification}</div>
+        `;
+
+        const optionBtns = quizContent.querySelectorAll('.option-btn');
+        optionBtns.forEach((btn, index) => {
+            btn.disabled = true;
+            if (index === question.correct) {
+                btn.classList.add('correct');
+            } else if (index === selectedAnswer && !isCorrect) {
+                btn.classList.add('incorrect');
+            }
+        });
+    }
 }
 
 function selectAnswer(answerIndex) {
     const questionIndex = appState.currentQuestionIndex;
-    const question = appState.quizQuestions[questionIndex];
-    
     appState.userAnswers[questionIndex] = answerIndex;
-    
-    // Mostrar feedback
-    const feedbackArea = document.getElementById('feedback-area');
-    const isCorrect = answerIndex === question.correct;
-    
-    feedbackArea.classList.remove('hidden', 'correct', 'incorrect');
-    feedbackArea.classList.add(isCorrect ? 'correct' : 'incorrect');
-    
-    const feedbackTitle = isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta';
-    const feedbackIcon = isCorrect ? '[✓]' : '[✗]';
-    
-    feedbackArea.innerHTML = `
-        <div class="feedback-title">${feedbackIcon} ${feedbackTitle}</div>
-        <div class="feedback-text"><strong>Justificativa:</strong> ${question.justification}</div>
-    `;
-    
-    // Desabilitar botões de opção
-    const optionBtns = document.querySelectorAll('.option-btn');
-    optionBtns.forEach((btn, index) => {
-        btn.disabled = true;
-        if (index === question.correct) {
-            btn.classList.add('correct');
-        } else if (index === answerIndex && !isCorrect) {
-            btn.classList.add('incorrect');
-        }
-    });
-    
-    // Scroll para feedback
-    feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    renderQuizQuestion();
 }
 
 function nextQuestion() {
+    if (appState.userAnswers[appState.currentQuestionIndex] === null) {
+        alert('Selecione uma resposta antes de prosseguir.');
+        return;
+    }
+
     if (appState.currentQuestionIndex < appState.quizQuestions.length - 1) {
         appState.currentQuestionIndex++;
         renderQuizQuestion();
@@ -232,6 +234,14 @@ function previousQuestion() {
 }
 
 function finishQuiz() {
+    const unansweredIndex = appState.userAnswers.findIndex(answer => answer === null);
+    if (unansweredIndex !== -1) {
+        alert(`Responda todas as questões antes de salvar. Questão ${unansweredIndex + 1} está sem resposta.`);
+        appState.currentQuestionIndex = unansweredIndex;
+        renderQuizQuestion();
+        return;
+    }
+
     // Calcular score
     let correctAnswers = 0;
     let categoryScores = {};
