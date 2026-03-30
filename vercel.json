@@ -1,5 +1,10 @@
 {
-  "buildCommand": "echo 'SPA estática - sem build necessário'",
-  "outputDirectory": ".",
-  "public": "."
+  "public": ".",
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
