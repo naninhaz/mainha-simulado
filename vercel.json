@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'SPA estática - sem build necessário'",
+  "outputDirectory": ".",
+  "public": "."
+}
