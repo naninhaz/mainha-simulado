@@ -23,16 +23,16 @@
                 </div>
                 
                 <div class="menu-options">
-                    <button class="btn btn-primary" onclick="showScreen('content-screen', 'gerencia')">
+                    <button type="button" class="btn btn-primary" onclick="showScreen('content-screen', 'gerencia')">
                         Conteúdo: Gerência
                     </button>
-                    <button class="btn btn-primary" onclick="showScreen('content-screen', 'patrimonial')">
+                    <button type="button" class="btn btn-primary" onclick="showScreen('content-screen', 'patrimonial')">
                         Conteúdo: Gestão Patrimonial
                     </button>
-                    <button class="btn btn-success" onclick="showScreen('quiz-select-screen')">
+                    <button type="button" class="btn btn-success" onclick="showScreen('quiz-select-screen')">
                         Iniciar Simulado
                     </button>
-                    <button class="btn btn-info" onclick="showScreen('history-screen')">
+                    <button type="button" class="btn btn-info" onclick="showScreen('history-screen')">
                         Ver Histórico de Tentativas
                     </button>
                 </div>
@@ -42,7 +42,7 @@
         <!-- Quiz Selection Screen -->
         <div id="quiz-select-screen" class="screen">
             <header class="header-internal">
-                <button class="btn-back" onclick="backToHome()">Voltar</button>
+                <button type="button" class="btn-back" onclick="backToHome()">Voltar</button>
                 <h1>Escolha a Matéria</h1>
             </header>
             
@@ -50,15 +50,15 @@
                 <div class="selection-content">
                     <p class="selection-intro">Selecione qual matéria deseja ser avaliado:</p>
                     <div class="selection-options">
-                        <button class="btn btn-selection" onclick="startQuizByCategory('Gerência')">
+                        <button type="button" class="btn btn-selection" onclick="startQuizByCategory('Gerência')">
                             <span class="selection-title">Gerência em Enfermagem</span>
                             <span class="selection-subtitle">20 questões</span>
                         </button>
-                        <button class="btn btn-selection" onclick="startQuizByCategory('Gestão Patrimonial')">
+                        <button type="button" class="btn btn-selection" onclick="startQuizByCategory('Gestão Patrimonial')">
                             <span class="selection-title">Gestão Patrimonial</span>
                             <span class="selection-subtitle">20 questões</span>
                         </button>
-                        <button class="btn btn-selection-full" onclick="startQuizByCategory('Ambas')">
+                        <button type="button" class="btn btn-selection-full" onclick="startQuizByCategory('Ambas')">
                             <span class="selection-title">Simulado Completo</span>
                             <span class="selection-subtitle">40 questões (20 de cada matéria)</span>
                         </button>
@@ -70,7 +70,7 @@
         <!-- Content Screen (Estudo) -->
         <div id="content-screen" class="screen">
             <header class="header-internal">
-                <button class="btn-back" onclick="backToHome()">Voltar</button>
+                <button type="button" class="btn-back" onclick="backToHome()">Voltar</button>
                 <h1 id="content-title">Conteúdo</h1>
             </header>
             
@@ -82,7 +82,7 @@
         <!-- Quiz Screen -->
         <div id="quiz-screen" class="screen">
             <header class="header-internal quiz-header">
-                <button class="btn-back" onclick="exitQuiz()">Voltar</button>
+                <button type="button" class="btn-back" onclick="exitQuiz()">Voltar</button>
                 <div class="quiz-progress">
                     <span id="quiz-counter">Questão 1 de 40</span>
                     <div class="progress-bar">
@@ -118,8 +118,8 @@
                 </div>
                 
                 <div class="results-actions">
-                    <button class="btn btn-success" onclick="backToHome()">Escolher Outra Matéria</button>
-                    <button class="btn btn-primary" onclick="backToHome()">Voltar ao Início</button>
+                    <button type="button" class="btn btn-success" onclick="backToHome()">Escolher Outra Matéria</button>
+                    <button type="button" class="btn btn-primary" onclick="backToHome()">Voltar ao Início</button>
                 </div>
             </main>
         </div>
@@ -127,7 +127,7 @@
         <!-- History Screen -->
         <div id="history-screen" class="screen">
             <header class="header-internal">
-                <button class="btn-back" onclick="backToHome()">Voltar</button>
+                <button type="button" class="btn-back" onclick="backToHome()">Voltar</button>
                 <h1>Histórico de Tentativas</h1>
             </header>
             

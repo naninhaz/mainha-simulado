@@ -44,19 +44,23 @@ function showScreenDirect(screenId, contentType = null) {
     
     // Mostrar a tela específica
     const targetScreen = document.getElementById(screenId);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
-        appState.currentScreen = screenId;
-        appState.currentContentType = contentType;
-        
-        // Renderizar conteúdo específico
-        if (screenId === 'content-screen' && contentType) {
-            renderContent(contentType);
-        } else if (screenId === 'history-screen') {
-            renderHistoryScreen();
-        }
+    if (!targetScreen) {
+        console.error(`Tela não encontrada: ${screenId}`);
+        return;
+    }
+
+    targetScreen.classList.add('active');
+    appState.currentScreen = screenId;
+    appState.currentContentType = contentType;
+    
+    // Renderizar conteúdo específico
+    if (screenId === 'content-screen' && contentType) {
+        renderContent(contentType);
+    } else if (screenId === 'history-screen') {
+        renderHistoryScreen();
     }
 }
+
 
 function backToHome() {
     showScreen('home-screen');
@@ -83,11 +87,16 @@ function renderHome() {
 
 function renderContent(contentType) {
     const content = studyContent[contentType];
-    if (!content) return;
-
     const contentBody = document.getElementById('content-body');
     const contentTitle = document.getElementById('content-title');
-    
+
+    if (!content) {
+        console.error('Conteúdo não encontrado:', contentType);
+        contentTitle.textContent = 'Conteúdo indisponível';
+        contentBody.innerHTML = '<p>Não foi possível carregar o conteúdo solicitado.</p>';
+        return;
+    }
+
     contentTitle.textContent = content.title;
     
     let html = '';
@@ -411,6 +420,15 @@ function loadQuizHistory() {
         }
     }
 }
+
+// Expor funções globais para handlers inline em HTML
+window.showScreen = showScreen;
+window.backToHome = backToHome;
+window.exitQuiz = exitQuiz;
+window.startQuizByCategory = startQuizByCategory;
+window.selectAnswer = selectAnswer;
+window.previousQuestion = previousQuestion;
+window.nextQuestion = nextQuestion;
 
 // ===== RESET DE DADOS (OPCIONAL) =====
 
